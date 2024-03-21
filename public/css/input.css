@@ -1,0 +1,44 @@
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+    .scrollbar::-webkit-scrollbar {
+        @apply w-2 h-0.5 lg:w-0
+    }
+
+    .scrollbar::-webkit-scrollbar-track {
+        @apply bg-black;
+    }
+
+    .scrollbar::-webkit-scrollbar-thumb {
+        @apply rounded-sm bg-gray-800;
+    }
+
+    .scrollbar::-webkit-scrollbar-thumb:hover {
+        @apply bg-gray-700;
+    }
+}
+
+@layer components{
+    .chat{
+        @apply rounded-md flex flex-col p-2 gap-1 first:*:text-xs max-w-[70%] w-48 *:w-full
+    }
+    .chatmessage{
+        @apply text-base font-medium break-words;
+    }
+    .chatname{
+        @apply tracking-wider font-medium font-mono;
+    }
+    .me>.chatname{
+        @apply hidden;
+    }
+    .other{
+        @apply self-start bg-slate-800
+    }
+    .me{
+        @apply self-end bg-sky-300 text-black
+    }
+}

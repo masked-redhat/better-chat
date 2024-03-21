@@ -1,0 +1,61 @@
+<%-include('../components/views/header.ejs', {title: "Log In/Sign Up - Bett3r Ch4t", data: ["person"]})%>
+
+<main class="*:min-h-96 *:border-b-[1px] *:border-gray-700 *:p-4">
+    <section
+    id="welcome"
+    class="p-5 flex items-end justify-center flex-col gap-2 h-[90vh]"
+    >
+    <h1 class="text-3xl md:text-7xl font-extrabold">Bett3r Ch4t</h1>
+    <p class="text-lg text-gray-400 font-semibold text-right">
+        World's fastest web application to chat with your friends and family
+    </p>
+    <a
+        class="flex items-center border w-fit mt-5 md:px-6 px-2 py-2 relative before:content-[''] before:absolute before:w-0 before:h-full before:top-0 before:left-0 before:bg-slate-700 before:-z-10 hover:before:w-full before:transition-all hover:animate-pulse overflow-hidden"
+        href="#signup"
+    >
+        <span class="material-symbols-outlined relative md:-left-4">
+        chevron_right
+        </span>
+        <span class="text-lg font-semibold tracking-wider"
+        >Start Chatting Now</span
+        >
+    </a>
+    </section>
+    <section id="features" class="flex flex-col items-center justify-center h-[60vh]">
+    <h2 class="text-3xl font-semibold w-fit mx-auto">Features</h2>
+    <div
+        class="w-full flex flex-wrap gap-4 mt-4 *:rounded-md justify-center content-center *:md:h-36 *:flex *:gap-3 *:p-4 *:md:w-[45%] *:*:rounded-md *:bg-gray-900 *:items-center *:w-full"
+    >
+        <%- include('../components/views/feature_box.ejs', {service: "Good Communication Services"}); %>
+        <%- include('../components/views/feature_box.ejs', {service: "Authenticated messaging"}); %>
+        <%- include('../components/views/feature_box.ejs', {service: "Group management made easy"}); %>
+        <%- include('../components/views/feature_box.ejs', {service: "Chatting made for public"}); %>
+        
+    </div>
+    </section>
+    <section
+    id="signup"
+    class="flex flex-col items-center justify-center gap-4 h-[90vh]"
+    >
+    <header
+        class="bg-gray-800 bg-opacity-10 md:p-2 gap-2 flex items-center *:flex *:items-center *:gap-2 rounded-md hover:*:bg-gray-800 *:px-4 *:py-2 *:rounded-md"
+    >
+        <button id="signUp">
+        <span class="material-symbols-outlined">person_add </span>
+        <span>Sign Up</span>
+        </button>
+        <button id="logIn">
+        <span class="material-symbols-outlined">login </span>
+        <span>Login</span>
+        </button>
+    </header>
+    <%-include('../components/views/form_sign.ejs')%>
+    </section>
+</main>
+
+<%-include('../components/views/footer.ejs')%>
+
+<script src="/scripts/signin.js" defer></script>
+
+</body>
+</html>

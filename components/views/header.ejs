@@ -1,0 +1,40 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="/images/favicon.jpg" type="image/x-icon" />
+    <title><%= title %></title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+    />
+    <link rel="stylesheet" href="/css/output.css" />
+  </head>
+
+  <body
+    class="bg-black text-white container mx-auto *:font-Rajdhani scrollbar max-w-screen-lg scroll-smooth"
+  >
+
+<header
+  class="flex items-center sticky top-0 bg-black bg-opacity-75 backdrop-filter backdrop-blur-sm z-30 border-b border-b-gray-600"
+>
+  <div class="logo h-16 flex items-center gap-2 p-2 mr-auto">
+    <img
+      src="/images/favicon.jpg"
+      alt="Bett3r Ch4t"
+      class="h-full rounded-md"
+    />
+    <span class="text-lg md:text-3xl tracking-wide font-bold">Bett3r Ch4t</span>
+  </div>
+  <input type="text" placeholder="Search" name="search" id="searchText" class="outline-none text-lg px-2 py-1 md:border-t-0 border-y border-y-gray-600 md:static absolute md:w-fit w-full md:h-fit h-full bottom-full bg-black z-20
+  ">
+  <% for(var i=0; i < data.length; i++) { %>
+    <button
+    id="<%= data[i] %>"
+    class="material-symbols-outlined w-10 h-10 flex items-center justify-center hover:bg-gray-800 rounded-md m-2 select-none cursor-pointer transition-colors"
+  >
+    <%= data[i] %>
+  </button>
+ <% } %>
+  
+</header>
