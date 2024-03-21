@@ -21,7 +21,8 @@ router.get('/', async (req, res) => {
         else {
             res.status(200).redirect("/#signup");
         }
-    } catch {
+    } catch (e) {
+        console.log(e);
         res.status(200).redirect("/#signup");
     }
 })
