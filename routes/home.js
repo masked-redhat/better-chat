@@ -11,6 +11,7 @@ const router = Router();
 router.use(bodyParser.json())
 
 router.get('/', async (req, res) => {
+    console.log("Working");
     try {
         let cookies = req.cookies;
         let match = await Cookies.checkCookie(cookies.usrID, cookies.__enc);
