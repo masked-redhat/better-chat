@@ -31,7 +31,7 @@ socket.on('OnlineFriend', (val) => {
     currentOnlineFs.textContent = online >= 0 ? online : 0;
 })
 
-socket.on('friendAdded', (val)=>{
+socket.on('friendAdded', (val) => {
     loadChannelsAndFriends();
     socket.emit('friendAdded', val);
 })
@@ -186,6 +186,7 @@ const scrollBottom = () => {
 const sendChat = (channelName, channelType) => {
     const form = document.getElementById('chatForm');
     let inputText = form.firstElementChild.value.trim();
+    form.firstElementChild.value = '';
     if (inputText == '') {
         return;
     }
