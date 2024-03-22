@@ -39,17 +39,19 @@ io.on('connection', (socket) => {
     socket.on('chat', async (params) => {
         let msg = params[0];
         let chnl = params[1], chnlT = params[2];
+        console.log(msg, chnl, chnlT);
         let chatCh;
         if (chnlT == 'f') {
-            chatCh = await Channels.getChannelChatfrom(USER.username, chnl);
+            chatCh = await Channels.getChannelChatfromFriends(USER.username, chnl);
             chatCh.chats.push({ user: USER.username, text: msg });
             chatCh.save();
+            socket.to(chatCh.name).emit('chatFrom', { user: USER.username, type: 'f', text: msg })
         }
         else {
-            chatCh = await Chats.findOne({ name: chnl }); chatCh.chats.push({ user: USER.username, text: msg });
+            chatCh = await Chats.findOne({ name: `#${chnl}`.replace(' ', '_') }); chatCh.chats.push({ user: USER.username, text: msg });
             chatCh.save();
+            socket.to(chatCh.name).emit('chatFrom', { user: chnl, type: 'c', text: msg })
         }
-        socket.to(chatCh.name).emit('chatFrom', { user: USER.username, type: 'f', text: msg })
     })
 
     socket.on('namesetup', async (nme) => {
@@ -58,29 +60,33 @@ io.on('connection', (socket) => {
         socket.join(`@@@@user@@@@${USER.username}`)
         for (const channel of USER.channels) {
             if (channel.startsWith("@")) {
-                let chatCh = await Channels.getChannelChatfrom(USER.username, channel.slice(1));
+                let chatCh = await Channels.getChannelChatfromFriends(USER.username, channel.slice(1));
                 socket.to(chatCh.name).emit('onlineFriends', [1, USER.username])
+                socket.join(chatCh.name);
+            }
+            else {
+                let chatCh = await Channels.getChannelChatfromChannels(channel.slice(1));
                 socket.join(chatCh.name);
             }
         }
     })
 
     socket.on('friendAdded', async (val) => {
-        let chatCh = await Channels.getChannelChatfrom(USER.username, val);
+        let chatCh = await Channels.getChannelChatfromFriends(USER.username, val);
         USER = await User.findOne({ username: USER.username });
         socket.join(chatCh.name);
         socket.emit('onlineFriends', [1, val]);
     })
 
     socket.on('addFriend', async (usr) => {
-        let chatCh = await Channels.getChannelChatfrom(USER.username, usr);
+        let chatCh = await Channels.getChannelChatfromFriends(USER.username, usr);
         USER = await User.findOne({ username: USER.username });
         socket.join(chatCh.name);
         socket.to(`@@@@user@@@@${usr}`).emit('friendAdded', USER.username);
     })
 
     socket.on('OnlineFriend', async (val) => {
-        let ChatCh = await Channels.getChannelChatfrom(USER.username, val[1]);
+        let ChatCh = await Channels.getChannelChatfromFriends(USER.username, val[1]);
         socket.to(ChatCh.name).emit('OnlineFriend', 1);
     })
 
@@ -88,7 +94,7 @@ io.on('connection', (socket) => {
         try {
             console.log(USER.username, " disconnected"); for (const channel of USER.channels) {
                 if (channel.startsWith("@")) {
-                    let chatCh = await Channels.getChannelChatfrom(USER.username, channel.slice(1));
+                    let chatCh = await Channels.getChannelChatfromFriends(USER.username, channel.slice(1));
                     socket.to(chatCh.name).emit('onlineFriends', [-1, USER.username]);
                 }
             }

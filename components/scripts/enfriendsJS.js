@@ -8,7 +8,7 @@ const getUserFriendsAndChannels = async (cook) => {
     let channels = [];
     let frndsG = [];
     for (const channel of usr.channels) {
-        if (channel.startsWith("#")){
+        if (!channel.startsWith("@")){
             channels.push(channel);
         }else {
             frndsG.push(channel);

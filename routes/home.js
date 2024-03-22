@@ -5,6 +5,7 @@ import { User } from "../models/User.js";
 import { Channel } from "../models/Channel.js";
 import { Chats } from "../models/Chats.js";
 import { FFrends } from "../components/scripts/enfriendsJS.js";
+import { Channels } from "../components/scripts/enchannelJS.js";
 
 const router = Router();
 
@@ -32,7 +33,7 @@ router.get('/name', async (req, res) => {
     res.send(name.username);
 })
 
-router.get('/friends', async (req, res) => {
+router.get('/connections', async (req, res) => {
     let data = await FFrends.getUserFriendsAndChannels(req.cookies);
     res.send(JSON.stringify(data));
 });
@@ -54,6 +55,7 @@ router.post('/search', async (req, res) => {
 
 router.put('/join', async (req, res) => {
     let body = req.body.user, type = req.body.type;
+    console.log(body);
     let cUser = await Cookies.getUser(req.cookies);
     if (type == 'f') {
         let user = await User.findOne({ username: body });
@@ -65,12 +67,12 @@ router.put('/join', async (req, res) => {
         await Channel.create({ name: cUser.username + ' ' + user.username, dateCreated: new Date().toUTCString(), isPerson: true, members: [cUser.username, user.username] })
         await Chats.create({ name: cUser.username + ' ' + user.username })
     } else {
-        let user = await Channel.findOne({ name: body });
+        let channel = await Channel.findOne({ name: body });
 
-        cUser.channels.push(`#${cUser.name}`);
+        cUser.channels.push(`#${channel.name}`);
         cUser.save();
-        user.members.push(cUser.username);
-        user.save();
+        channel.members.push(cUser.username);
+        channel.save();
     }
 
     res.send('{"status":"success"}');
@@ -78,24 +80,33 @@ router.put('/join', async (req, res) => {
 
 router.post('/getchat', async (req, res) => {
     let user = await Cookies.getUser(req.cookies);
-    let toConnet = req.body.name;
+    let toConnect = req.body.name;
     let typeConnection = req.body.type;
     let chatName;
     if (typeConnection == 'c') {
-        chatName = await Chats.findOne({ name: toConnet });
+        chatName = await Chats.findOne({ name: `#${toConnect}`.replace(' ', '_') });
     }
     else {
-        chatName = await Chats.findOne({ name: user.username + ' ' + toConnet });
+        chatName = await Chats.findOne({ name: user.username + ' ' + toConnect });
         if (!chatName) {
-            chatName = await Chats.findOne({ name: toConnet + ' ' + user.username });
+            chatName = await Chats.findOne({ name: toConnect + ' ' + user.username });
         }
     }
     let data = chatName.chats;
     res.send(JSON.stringify(data));
 })
 
-router.put('/createchannel', async (req, res) => {
-    res.send("{}")
+router.get('/create', async (req, res) => {
+    let channel = await Channels.isChannel(req.query.channelName);
+    if (!channel) {
+        let user = await Cookies.getUser(req.cookies);
+        channel = await Channels.createChannel(req.query.channelName, [user]);
+        channel['status'] = 'OK';
+        res.send(JSON.stringify(channel))
+    }
+    else {
+        res.send('{"status":"DENIED"}')
+    }
 })
 
 export const HomeRouter = router;

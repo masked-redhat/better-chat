@@ -8,7 +8,7 @@ const searchBtn = document.getElementById('search');
 const searchText = document.getElementById('searchText');
 const chatSection = document.getElementById("chat");
 const currentOnlineFs = document.getElementById('friendsNumberOnline');
-
+const channelCreationBtn = document.getElementById('createChannelButton');
 
 const socket = io();
 
@@ -95,6 +95,8 @@ searchText.addEventListener('keypress', async (e) => {
         })
         searchRes = await searchRes.json();
 
+        console.log(searchRes);
+
         chatSection.textContent = '';
 
         for (const res of searchRes) {
@@ -102,12 +104,12 @@ searchText.addEventListener('keypress', async (e) => {
             if (res.type == "c") {
                 icon = "tag";
             } else { icon = "alternate_email" }
-            if (res.name) {
-                name = res.name;
+            if (res.channel) {
+                name = res.channel;
             } else { name = res.user }
             let div = document.createElement('div');
             chatSection.appendChild(div);
-            div.outerHTML = `<div class="result p-4 w-full border-b border-b-gray-600 flex items-center justify-between gap-2"><span class='text-base flex items-center gap-1'><span class="material-symbols-outlined">${icon}</span>${name}</span><button class="px-3 py-1 bg-white text-black font-semibold" data-user="${name}" data-type="${res.type}" onclick="followCommand(this)">Add Friend</button></div>`
+            div.outerHTML = `<div class="result p-4 w-full border-b border-b-gray-600 flex items-center justify-between gap-2"><span class='text-base flex items-center gap-1'><span class="material-symbols-outlined">${icon}</span>${name}</span><button class="px-3 py-1 bg-white text-black font-semibold" data-user="${name}" data-type="${res.type}" onclick="followCommand(this)">${icon != 'tag' ? 'Add Friend' : 'Join Channel'}</button></div>`
             chatSection.appendChild(div);
 
         }
@@ -117,6 +119,11 @@ searchText.addEventListener('keypress', async (e) => {
 const followCommand = async (e) => {
     let usr = e.dataset.user;
     let typ = e.dataset.type
+    if (typ == 'c') {
+        e.disabled = true;
+        e.textContent = 'Joined';
+        return;
+    }
     let res = await fetch('/home/join', {
         method: "PUT",
         headers: { 'Content-Type': 'application/json' },
@@ -132,7 +139,7 @@ const followCommand = async (e) => {
 const loadChannelsAndFriends = async () => {
     channels.textContent = '';
     friends.textContent = '';
-    let chnls = await fetch('/home/friends');
+    let chnls = await fetch('/home/connections');
     chnls = await chnls.json();
 
     for (const channel of chnls.channels) {
@@ -181,6 +188,25 @@ const createChatCardOldChats = (data) => {
 
 const scrollBottom = () => {
     chatSection.scrollTop = chatSection.scrollHeight;
+}
+
+channelCreationBtn.onclick = () => {
+    chatSection.textContent = ''
+    let div = document.createElement('form');
+    chatSection.appendChild(div);
+    div.outerHTML = `<form onsubmit="return false;" class="w-full h-full flex flex-col gap-4 p-4 justify-center"><input type="text" placeholder="Channel name" id="channelNameCreateInput" name="channelName" class="bg-transparent px-4 pb-2 text-lg text-center outline-none border-b border-b-slate-600"><button class="p-3 border border-green-700 hover:bg-green-700 rounded-md font-bold tracking-wider outline-none" onclick="createChannelAndBoom()" id="createChannel">Create Channel</button></form>`
+}
+
+const createChannelAndBoom = async () => {
+    let channelName = document.getElementById('channelNameCreateInput').value.trim();
+    if (channelName != '') {
+        let res = await fetch(`/home/create?channelName=${channelName}`);
+        res = await res.json();
+        if (res.status != 'DENIED') {
+            loadChannelsAndFriends();
+            console.log(res)
+        }
+    }
 }
 
 const sendChat = (channelName, channelType) => {
