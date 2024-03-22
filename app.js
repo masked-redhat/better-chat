@@ -67,6 +67,7 @@ io.on('connection', (socket) => {
             else {
                 let chatCh = await Channels.getChannelChatfromChannels(channel.slice(1));
                 socket.join(chatCh.name);
+                socket.to(chatCh.name).emit('chatFrom', {usr: channel.slice(1), text: `${USER.username}, Joined...`, type:'c'});
             }
         }
     })
