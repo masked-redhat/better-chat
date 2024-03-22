@@ -3,12 +3,14 @@ const channelBtn = document.getElementById("channelBtn");
 const friends = document.getElementById("friends");
 const channels = document.getElementById("channels");
 const logOutBtn = document.getElementById("logout");
-const notifBar = document.getElementById('notifications');
+// const notifBar = document.getElementById('notifications');
 const searchBtn = document.getElementById('search');
 const searchText = document.getElementById('searchText');
 const chatSection = document.getElementById("chat");
 const currentOnlineFs = document.getElementById('friendsNumberOnline');
 const channelCreationBtn = document.getElementById('createChannelButton');
+const profileBtn = document.getElementById('person')
+
 
 const socket = io();
 
@@ -86,6 +88,23 @@ searchBtn.onclick = () => {
         searchText.classList.remove('-bottom-full')
         searchText.classList.add('bottom-full')
     }
+    searchText.focus();
+    if (searchText.value != '') {
+        searchText.dispatchEvent(new KeyboardEvent('keypress', {
+            key: 'Enter',
+            code: 'Enter',
+            which: 13,
+            keyCode: 13,
+        }))
+    }
+}
+
+profileBtn.onclick = () => {
+    chatSection.textContent = '';
+    let div = document.createElement('div');
+    chatSection.appendChild(div);
+    div.outerHTML = `<div class="flex h-full w-full items-center justify-center flex-col gap-2 text-xl"><span class="material-symbols-outlined select-none text-5xl">person</span><span class="text-green-300"><span class="text-white mr-2 select-none">@</span><span class="select-text tracking-wider">${sessionStorage.getItem('username')}</span></span>
+    <button class="px-4 py-1 rounded-md bg-gray-600 mt-5" onclick="logOutBtn.click()">Logout</button></div>`
 }
 
 searchText.addEventListener('keypress', async (e) => {
@@ -100,8 +119,6 @@ searchText.addEventListener('keypress', async (e) => {
             body: JSON.stringify({ text: e.target.value.trim() })
         })
         searchRes = await searchRes.json();
-
-        console.log(searchRes);
 
         chatSection.textContent = '';
 
@@ -208,9 +225,19 @@ const createChannelAndBoom = async () => {
     if (channelName != '') {
         let res = await fetch(`/home/create?channelName=${channelName}`);
         res = await res.json();
+
+        chatSection.textContent = '';
         if (res.status != 'DENIED') {
             loadChannelsAndFriends();
-            console.log(res)
+            let div = document.createElement('div');
+            chatSection.appendChild(div);
+            div.outerHTML = `<div class="flex items-center justify-center flex-col select-none"><span class="material-symbols-outlined p-8 text-7xl text-green-300">done</span><span class="text-xl text-green-300">Channel Created</span><span class="text-xl bg-gray-700 mt-5 px-3 py-1 rounded-md">Check your channels section</span></div>`
+        }
+        else {
+            let div = document.createElement('div');
+            chatSection.appendChild(div);
+            div.outerHTML = `<div class="flex items-center justify-center flex-col select-none"><span class="material-symbols-outlined p-8 text-7xl text-red-700">close</span><span class="text-xl text-red-700 font-bold">Channel Name already acquired</span><span
+            class="text-xl bg-gray-700 mt-5 px-3 py-1 rounded-md">Retry by clicking 'Create Channel' Button</span></div>`
         }
     }
 }
@@ -229,26 +256,26 @@ const sendChat = (channelName, channelType) => {
 
 }
 
-const loadNotifications = async () => {
-    let notifications = await fetch('/home/notifications');
-    notifications = await notifications.json();
+// const loadNotifications = async () => {
+//     let notifications = await fetch('/home/notifications');
+//     notifications = await notifications.json();
 
-    for (const n of notifications) {
-        let name = n.split(' ')[0]
-        let channel = n.split(' ').slice(1).join(' ');
-        let div = document.createElement('div');
-        notifBar.appendChild(div);
-        div.outerHTML = `<div class="notify flex flex-col p-2  border-b border-b-gray-600 relative">
-        <span><span class="font-bold tracking-wide text-lg">${name}</span> messaged</span>
-        <span class="text-xs">in <span class="text-base text-sky-400">${channel}</span></span>
-        <button
-            class="closeNotification flex w-6 h-6 text-sm absolute right-3 top-3 hover:bg-gray-500  rounded-md"><span
-                class="material-symbols-outlined">
-                close
-            </span></button>
-    </div>`;
-    }
-}
+//     for (const n of notifications) {
+//         let name = n.split(' ')[0]
+//         let channel = n.split(' ').slice(1).join(' ');
+//         let div = document.createElement('div');
+//         notifBar.appendChild(div);
+//         div.outerHTML = `<div class="notify flex flex-col p-2  border-b border-b-gray-600 relative">
+//         <span><span class="font-bold tracking-wide text-lg">${name}</span> messaged</span>
+//         <span class="text-xs">in <span class="text-base text-sky-400">${channel}</span></span>
+//         <button
+//             class="closeNotification flex w-6 h-6 text-sm absolute right-3 top-3 hover:bg-gray-500  rounded-md"><span
+//                 class="material-symbols-outlined">
+//                 close
+//             </span></button>
+//     </div>`;
+//     }
+// }
 
 const getUserName = async () => {
     let name = await fetch('/home/name');
@@ -258,6 +285,6 @@ const getUserName = async () => {
 }
 
 loadChannelsAndFriends();
-loadNotifications();
+// loadNotifications();
 getUserName();
 
