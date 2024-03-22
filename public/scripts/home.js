@@ -118,12 +118,7 @@ searchText.addEventListener('keypress', async (e) => {
 
 const followCommand = async (e) => {
     let usr = e.dataset.user;
-    let typ = e.dataset.type
-    if (typ == 'c') {
-        e.disabled = true;
-        e.textContent = 'Joined';
-        return;
-    }
+    let typ = e.dataset.type;
     let res = await fetch('/home/join', {
         method: "PUT",
         headers: { 'Content-Type': 'application/json' },
@@ -133,6 +128,11 @@ const followCommand = async (e) => {
     e.disabled = true;
     e.textContent = 'Friend';
     await loadChannelsAndFriends();
+    if (typ == 'c') {
+        e.disabled = true;
+        e.textContent = 'Joined';
+        return;
+    }
     socket.emit('addFriend', usr);
 }
 

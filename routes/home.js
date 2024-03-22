@@ -70,9 +70,9 @@ router.put('/join', async (req, res) => {
         let channel = await Channel.findOne({ name: body });
 
         cUser.channels.push(`#${channel.name}`);
-        cUser.save();
+        await cUser.save();
         channel.members.push(cUser.username);
-        channel.save();
+        await channel.save();
     }
 
     res.send('{"status":"success"}');
