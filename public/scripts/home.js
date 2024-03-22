@@ -13,8 +13,14 @@ const channelCreationBtn = document.getElementById('createChannelButton');
 const socket = io();
 
 socket.on('chatFrom', (params) => {
-    let doc = document.getElementById(`newChats${params.user}${params.type}`);
-    if (doc) {
+    let doc = false;
+    if (params.type == 'f') {
+        doc = document.getElementById(`newChats${params.user}${params.type}`);
+    }
+    else {
+        doc = document.getElementById(`newChats${params.channel}${params.type}`);
+
+    } if (doc) {
         doc.appendChild(createChatCardOldChats({ user: params.user, text: params.text }));
     }
     scrollBottom();

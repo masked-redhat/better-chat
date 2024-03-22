@@ -50,7 +50,7 @@ io.on('connection', (socket) => {
         else {
             chatCh = await Chats.findOne({ name: `#${chnl}`.replace(' ', '_') }); chatCh.chats.push({ user: USER.username, text: msg });
             chatCh.save();
-            socket.to(chatCh.name).emit('chatFrom', { user: chnl, type: 'c', text: msg })
+            socket.to(chatCh.name).emit('chatFrom', { user: USER.username, type: 'c', text: msg, channel: chnl })
         }
     })
 
@@ -67,7 +67,7 @@ io.on('connection', (socket) => {
             else {
                 let chatCh = await Channels.getChannelChatfromChannels(channel.slice(1));
                 socket.join(chatCh.name);
-                socket.to(chatCh.name).emit('chatFrom', {usr: channel.slice(1), text: `${USER.username}, Joined...`, type:'c'});
+                socket.to(chatCh.name).emit('chatFrom', { usr: channel.slice(1), text: `${USER.username}, Joined...`, type: 'c' });
             }
         }
     })
