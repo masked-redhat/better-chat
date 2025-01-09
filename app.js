@@ -1,9 +1,5 @@
 import express from "express";
-import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
-import { AuthRouter } from "./routes/authentication.js";
-import { RootRouter } from "./routes/root.js";
-import { HomeRouter } from "./routes/home.js";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import { Chats } from "./models/Chats.js";
@@ -11,7 +7,9 @@ import { User } from "./models/User.js";
 import { Channels } from "./components/scripts/enchannelJS.js";
 import APP from "./constants/env.js";
 import { connectToMongo } from "./db/db.js";
+import { Router as r } from "./routes/routes.js";
 
+// application configuration
 const app = express();
 const server = createServer(app);
 const io = new Server(server);
@@ -20,16 +18,17 @@ const port = APP.PORT;
 // connect to database
 await connectToMongo();
 
+// set viewing engine to be 'ejs'
 app.set("view engine", "ejs");
 
+// middlewares and static files
 app.use(express.static("public"));
 app.use(cookieParser());
 
-app.use("/", RootRouter);
-
-app.use("/auth", AuthRouter);
-
-app.use("/home", HomeRouter);
+// application routes
+app.use("/", r.RootRouter);
+app.use("/auth", r.AuthRouter);
+app.use("/home", r.HomeRouter);
 
 io.on("connection", (socket) => {
   console.log("a user connected - ", socket.id);
