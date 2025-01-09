@@ -10,13 +10,15 @@ import { Chats } from "./models/Chats.js";
 import { User } from "./models/User.js";
 import { Channels } from "./components/scripts/enchannelJS.js";
 import APP from "./constants/env.js";
-
-const db = await mongoose.connect(APP.MONGO_URI);
+import { connectToMongo } from "./db/db.js";
 
 const app = express();
 const server = createServer(app);
 const io = new Server(server);
 const port = APP.PORT;
+
+// connect to database
+await connectToMongo();
 
 app.set("view engine", "ejs");
 
@@ -50,14 +52,12 @@ io.on("connection", (socket) => {
       chatCh = await Chats.findOne({ name: `#${chnl}`.replace(" ", "_") });
       chatCh.chats.push({ user: USER.username, text: msg });
       chatCh.save();
-      socket
-        .to(chatCh.name)
-        .emit("chatFrom", {
-          user: USER.username,
-          type: "c",
-          text: msg,
-          channel: chnl,
-        });
+      socket.to(chatCh.name).emit("chatFrom", {
+        user: USER.username,
+        type: "c",
+        text: msg,
+        channel: chnl,
+      });
     }
   });
 
@@ -78,13 +78,11 @@ io.on("connection", (socket) => {
           channel.slice(1)
         );
         socket.join(chatCh.name);
-        socket
-          .to(chatCh.name)
-          .emit("chatFrom", {
-            usr: channel.slice(1),
-            text: `${USER.username}, Joined...`,
-            type: "c",
-          });
+        socket.to(chatCh.name).emit("chatFrom", {
+          usr: channel.slice(1),
+          text: `${USER.username}, Joined...`,
+          type: "c",
+        });
       }
     }
   });
