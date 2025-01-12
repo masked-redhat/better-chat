@@ -1,5 +1,4 @@
 import { Cookies } from "./encookieJS.js";
-import { Channels } from "./enchannelJS.js";
 import { User } from "../../models/User.js";
 import { Channel } from "../../models/Channel.js";
 
