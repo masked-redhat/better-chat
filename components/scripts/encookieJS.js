@@ -50,9 +50,4 @@ const getUser = async (cookies) => {
   return usr;
 };
 
-const options = {
-  https: true,
-  maxAge: 24 * 60 * 60 * 1000,
-};
-
-export const Cookies = { createCookie, checkCookie, options, getUser };
+export const Cookies = { createCookie, checkCookie, getUser };
