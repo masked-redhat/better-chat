@@ -11,6 +11,7 @@ const COOKIE_OPTIONS = {
     MIN: 1000,
     MAX: 100000,
   },
+  SEPARATOR: "     ",
 };
 
 const COOKIES = {
