@@ -1,53 +1,63 @@
+import APP from "../../constants/env.js";
 import { User } from "../../models/User.js";
 import crypto from "../../utils/crypto.js";
 
-const getRandomNumberForCookie = () => {
-  return 1000 + Math.floor(Math.random() * 21000);
+const getRandomEncryptedNum = () => {
+  return (
+    APP.COOKIE_OPTIONS.ENCRYPTED_NUM.MIN +
+    Math.floor(Math.random() * APP.COOKIE_OPTIONS.ENCRYPTED_NUM.MAX)
+  );
 };
 
 const createCookie = async (name) => {
-  let randomNum = getRandomNumberForCookie();
-  const res = await User.updateOne(
-    { username: name },
-    { randomNumber: randomNum }
-  );
+  const encNum = getRandomEncryptedNum().toString();
+  const res = await User.updateOne({ username: name }, { encNumber: encNum });
+  let encCookie, encryptedNum;
   if (res.acknowledged) {
-    let encryptedNum = crypto.crypt(name, randomNum.toString());
-    let cookie = name + "     " + randomNum;
-    cookie = crypto.crypt(encryptedNum, cookie);
-    return [cookie, encryptedNum];
+    encryptedNum = crypto.crypt(name, encNum);
+    encCookie = crypto.crypt(
+      encryptedNum,
+      name + APP.COOKIE_OPTIONS.SEPARATOR + encNum
+    );
   }
+  return { encCookie, encryptedNum };
 };
 
-const checkCookie = async (cookie, encryptedNum) => {
+const checkCookie = async (encCookie, encryptedNum) => {
   try {
-    cookie = crypto.decrypt(encryptedNum, cookie).split("     ");
-    let user = cookie[0];
-    let randomNum = cookie[1];
+    const decCookie = crypto
+      .decrypt(encryptedNum, encCookie)
+      .split(APP.COOKIE_OPTIONS.SEPARATOR);
+
+    const [username, encNum] = decCookie;
+
     let res = await User.findOne({
-      username: user,
-      randomNumber: Number(randomNum),
+      username,
+      encNumber: Number(encNum),
     });
     if (res) {
       return true;
     }
-    return false;
-  } catch {
-    return false;
+  } catch (err) {
+    console.log(err);
   }
+
+  return false;
 };
 
 const getUser = async (cookies) => {
-  let cookie = cookies.usrID,
-    encryptedNum = cookies.__enc;
-  cookie = crypto.decrypt(encryptedNum, cookie).split("     ");
-  let user = cookie[0];
-  let randomNum = cookie[1];
-  let usr = await User.findOne({
-    username: user,
-    randomNumber: Number(randomNum),
+  const { encCookie, encryptedNum } = cookies;
+  const decCookie = crypto
+    .decrypt(encryptedNum, encCookie)
+    .split(APP.COOKIE_OPTIONS.SEPARATOR);
+
+  const [username, encNum] = decCookie;
+
+  let user = await User.findOne({
+    username,
+    encNumber: Number(encNum),
   });
-  return usr;
+  return user;
 };
 
 export const Cookies = { createCookie, checkCookie, getUser };
