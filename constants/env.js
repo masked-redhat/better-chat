@@ -9,10 +9,16 @@ const COOKIE_OPTIONS = {
   MAXAGE: 24 * 60 * 60 * 1000,
 };
 
+const COOKIES = {
+  USER_ID: "usrID",
+  ENCRYPTED_NUM: "__enc",
+};
+
 const APP = {
   PORT,
   MONGO_URI,
   COOKIE_OPTIONS,
+  COOKIES,
 };
 
 export default APP;

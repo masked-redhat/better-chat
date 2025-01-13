@@ -28,8 +28,8 @@ router.post("/signup", async (req, res) => {
   if (cookies) {
     res
       .status(200)
-      .cookie("usrID", cookies[0], APP.COOKIE_OPTIONS)
-      .cookie("__enc", cookies[1], APP.COOKIE_OPTIONS)
+      .cookie(APP.COOKIES.USER_ID, cookies[0], APP.COOKIE_OPTIONS)
+      .cookie(APP.COOKIES.ENCRYPTED_NUM, cookies[1], APP.COOKIE_OPTIONS)
       .send('{"status":"true"}');
   } else {
     res.status(403).send('{"status":"false"}');
@@ -46,8 +46,8 @@ router.post("/login", async (req, res) => {
     let cookies = await Cookies.createCookie(user);
     res
       .status(200)
-      .cookie("usrID", cookies[0], APP.COOKIE_OPTIONS)
-      .cookie("__enc", cookies[1], APP.COOKIE_OPTIONS)
+      .cookie(APP.COOKIES.USER_ID, cookies[0], APP.COOKIE_OPTIONS)
+      .cookie(APP.COOKIES.ENCRYPTED_NUM, cookies[1], APP.COOKIE_OPTIONS)
       .send('{"status":"true"}');
   } else {
     res.status(403).send('{"status":"false"}');
@@ -56,8 +56,8 @@ router.post("/login", async (req, res) => {
 
 router.get("/logout", (req, res) => {
   try {
-    res.clearCookie("usrID");
-    res.clearCookie("__enc");
+    res.clearCookie(APP.COOKIES.USER_ID);
+    res.clearCookie(APP.COOKIES.ENCRYPTED_NUM);
     res.send("logged out");
   } catch {
     res.status(403).send('{"status":"false"}');
