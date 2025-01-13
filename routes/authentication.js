@@ -2,7 +2,7 @@ import { Router } from "express";
 import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
 import { Password } from "../components/scripts/enpassJS.js";
-import { Cookies } from "../components/scripts/encookieJS.js";
+import { Cookies } from "../components/scripts/cookies.js";
 import APP from "../constants/env.js";
 import { USR } from "../components/scripts/enuserJS.js";
 

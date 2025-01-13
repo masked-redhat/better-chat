@@ -1,4 +1,4 @@
-import { Cookies } from "./encookieJS.js";
+import { Cookies } from "./cookies.js";
 import { User } from "../../models/User.js";
 import { Channel } from "../../models/Channel.js";
 

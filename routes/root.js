@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { Cookies } from "../components/scripts/encookieJS.js";
+import { Cookies } from "../components/scripts/cookies.js";
 
 const router = Router();
 

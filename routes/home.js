@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { Cookies } from "../components/scripts/encookieJS.js";
+import { Cookies } from "../components/scripts/cookies.js";
 import bodyParser from "body-parser";
 import { User } from "../models/User.js";
 import { Channel } from "../models/Channel.js";

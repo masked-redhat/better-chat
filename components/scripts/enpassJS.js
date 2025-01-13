@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import { User } from '../../models/User.js';
-import { Cookies } from './encookieJS.js';
+import { Cookies } from './cookies.js';
 
 const hashPasswordAndSave = async (name, pass) => {
     let passHSH = bcrypt.hashSync(pass, 13);
