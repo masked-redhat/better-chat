@@ -11,8 +11,8 @@ import { Router as r } from "./routes/routes.js";
 
 // application configuration
 const app = express();
-const server = createServer(app);
-const io = new Server(server);
+const server = createServer(app); // create a http server from the express app
+const io = new Server(server); // create a new io server from the http server
 const port = APP.PORT;
 
 // connect to database
