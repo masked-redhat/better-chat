@@ -19,7 +19,7 @@ router.post("/signup", async (req, res) => {
   let available = await USR.checkUserName(user);
 
   if (!available) {
-    res.status(400).send('{"status":"false"}');
+    res.status(400).json({ status: false });
     return;
   }
 
@@ -28,11 +28,15 @@ router.post("/signup", async (req, res) => {
   if (cookies) {
     res
       .status(200)
-      .cookie(APP.COOKIES.USER_ID, cookies[0], APP.COOKIE_OPTIONS)
-      .cookie(APP.COOKIES.ENCRYPTED_NUM, cookies[1], APP.COOKIE_OPTIONS)
-      .send('{"status":"true"}');
+      .cookie(APP.COOKIES.USER_ID, cookies.encCookie, APP.COOKIE_OPTIONS)
+      .cookie(
+        APP.COOKIES.ENCRYPTED_NUM,
+        cookies.encryptedNum,
+        APP.COOKIE_OPTIONS
+      )
+      .json({ status: true });
   } else {
-    res.status(403).send('{"status":"false"}');
+    res.status(403).json({ status: false });
   }
 });
 
@@ -48,9 +52,9 @@ router.post("/login", async (req, res) => {
       .status(200)
       .cookie(APP.COOKIES.USER_ID, cookies[0], APP.COOKIE_OPTIONS)
       .cookie(APP.COOKIES.ENCRYPTED_NUM, cookies[1], APP.COOKIE_OPTIONS)
-      .send('{"status":"true"}');
+      .json({ status: true });
   } else {
-    res.status(403).send('{"status":"false"}');
+    res.status(403).json({ status: false });
   }
 });
 
@@ -60,7 +64,7 @@ router.get("/logout", (req, res) => {
     res.clearCookie(APP.COOKIES.ENCRYPTED_NUM);
     res.send("logged out");
   } catch {
-    res.status(403).send('{"status":"false"}');
+    res.status(403).json({ status: false });
   }
 });
 
