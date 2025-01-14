@@ -4,12 +4,7 @@ const UserSchema = new Schema({
   username: String,
   password: String,
   randomNumber: String,
-  notifications: [
-    {
-      time: Number,
-      text: String,
-    },
-  ],
+  notifications: [{ time: Number, text: String }],
   channels: [String],
 });
 
