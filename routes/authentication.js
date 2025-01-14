@@ -1,10 +1,10 @@
 import { Router } from "express";
 import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
-import { Password } from "../components/scripts/enpassJS.js";
+import Password from "../components/scripts/password.js";
 import Auth from "../middlewares/auth.js";
 import APP from "../constants/env.js";
-import { USR } from "../components/scripts/enuserJS.js";
+import User from "../components/scripts/user.js";
 
 const router = Router();
 
@@ -18,19 +18,19 @@ const cookieOptions = {
 };
 
 router.post("/signup", async (req, res) => {
-  let user = req.body.username;
-  let pass = req.body.password;
+  const { username, password } = req.body;
 
-  let available = await USR.checkUserName(user);
+  const usernameAvailable = await User.isUsernameAvailable(username);
 
-  if (!available) {
+  if (!usernameAvailable) {
     res.status(400).json({ status: false });
     return;
   }
 
-  let cookies = await Password.hashPasswordAndSave(user, pass);
+  const userSaved = await Password.hashAndSave(username, password);
 
-  if (cookies) {
+  if (userSaved) {
+    const cookies = await Auth.setupAuth(username);
     res
       .status(200)
       .cookie(APP.COOKIES.USER_ID, cookies.encCookie, cookieOptions)
@@ -42,13 +42,12 @@ router.post("/signup", async (req, res) => {
 });
 
 router.post("/login", async (req, res) => {
-  let user = req.body.username;
-  let pass = req.body.password;
+  const { username, password } = req.body;
 
-  let match = await Password.checkPassword(user, pass);
+  let match = await Password.checkPassword(username, password);
 
   if (match) {
-    let cookies = await Auth.setupAuth(user);
+    const cookies = await Auth.setupAuth(username);
     res
       .status(200)
       .cookie(APP.COOKIES.USER_ID, cookies.encCookie, cookieOptions)
@@ -63,7 +62,7 @@ router.get("/logout", (_, res) => {
   try {
     res.clearCookie(APP.COOKIES.USER_ID);
     res.clearCookie(APP.COOKIES.ENCRYPTED_NUM);
-    res.send("logged out");
+    res.status(204);
   } catch {
     res.status(403).json({ status: false });
   }
