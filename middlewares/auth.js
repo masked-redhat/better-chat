@@ -14,7 +14,7 @@ const setupAuth = async (name) => {
   const encNum = getRandomEncryptedNum().toString();
   let encCookie, encryptedNum;
   try {
-    const res = await User.updateOne({ username: name }, { encNumber: encNum });
+    const res = await User.updateOne({ username: name }, { randomNumber: encNum });
 
     // encrypt the cookies and get a encrypted cookie with a encrypted number
     if (res.acknowledged) {
