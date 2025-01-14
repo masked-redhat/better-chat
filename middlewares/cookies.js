@@ -1,6 +1,6 @@
-import APP from "../../constants/env.js";
-import { User } from "../../models/User.js";
-import crypto from "../../utils/crypto.js";
+import APP from "../constants/env.js";
+import { User } from "../models/User.js";
+import crypto from "../utils/crypto.js";
 
 const getRandomEncryptedNum = () => {
   return (
@@ -9,7 +9,7 @@ const getRandomEncryptedNum = () => {
   );
 };
 
-const createCookie = async (name) => {
+const setupAuth = async (name) => {
   const encNum = getRandomEncryptedNum().toString();
   const res = await User.updateOne({ username: name }, { encNumber: encNum });
   let encCookie, encryptedNum;
@@ -23,7 +23,7 @@ const createCookie = async (name) => {
   return { encCookie, encryptedNum };
 };
 
-const checkCookie = async (encCookie, encryptedNum) => {
+const validate = async (encCookie, encryptedNum) => {
   try {
     const decCookie = crypto
       .decrypt(encryptedNum, encCookie)
@@ -45,7 +45,7 @@ const checkCookie = async (encCookie, encryptedNum) => {
   return false;
 };
 
-const getUser = async (cookies) => {
+const getUserFromCookies = async (cookies) => {
   const { encCookie, encryptedNum } = cookies;
   const decCookie = crypto
     .decrypt(encryptedNum, encCookie)
@@ -60,4 +60,4 @@ const getUser = async (cookies) => {
   return user;
 };
 
-export const Cookies = { createCookie, checkCookie, getUser };
+export const Auth = { setupAuth, validate, getUser: getUserFromCookies };
