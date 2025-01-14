@@ -60,4 +60,6 @@ const getUserFromCookies = async (cookies) => {
   return user;
 };
 
-export const Auth = { setupAuth, validate, getUser: getUserFromCookies };
+const Auth = { setupAuth, validate, getUser: getUserFromCookies };
+
+export default Auth;
