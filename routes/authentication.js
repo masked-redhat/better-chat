@@ -51,15 +51,15 @@ router.post("/login", async (req, res) => {
     let cookies = await Auth.setupAuth(user);
     res
       .status(200)
-      .cookie(APP.COOKIES.USER_ID, cookies[0], APP.COOKIE_OPTIONS)
-      .cookie(APP.COOKIES.ENCRYPTED_NUM, cookies[1], APP.COOKIE_OPTIONS)
+      .cookie(APP.COOKIES.USER_ID, cookies.encCookie, cookieOptions)
+      .cookie(APP.COOKIES.ENCRYPTED_NUM, cookies.encryptedNum, cookieOptions)
       .json({ status: true });
   } else {
     res.status(403).json({ status: false });
   }
 });
 
-router.get("/logout", (req, res) => {
+router.get("/logout", (_, res) => {
   try {
     res.clearCookie(APP.COOKIES.USER_ID);
     res.clearCookie(APP.COOKIES.ENCRYPTED_NUM);
