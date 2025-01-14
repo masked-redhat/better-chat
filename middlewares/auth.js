@@ -9,20 +9,20 @@ const getRandomEncryptedNum = () => {
   );
 };
 
-const setupAuth = async (name) => {
+const setupAuth = async (username) => {
   // set the encNum to user data
   const encNum = getRandomEncryptedNum().toString();
   let encCookie, encryptedNum;
   try {
-    const res = await User.updateOne({ username: name }, { randomNumber: encNum });
+    const res = await User.updateOne({ username }, { randomNumber: encNum });
 
     // encrypt the cookies and get a encrypted cookie with a encrypted number
-    if (res.acknowledged) {
-      encryptedNum = crypto.crypt(name, encNum);
+    if (res.acknowledged === true) {
+      encryptedNum = crypto.crypt(username, encNum);
 
       encCookie = crypto.crypt(
         encryptedNum,
-        name + APP.COOKIE_OPTIONS.SEPARATOR + encNum
+        username + APP.COOKIE_OPTIONS.SEPARATOR + encNum
       );
     }
   } catch {}
@@ -47,11 +47,12 @@ const validate = async (req, res, next) => {
     // find the user
     let user = await User.findOne({
       username,
-      encNumber: Number(encNum),
+      randomNumber: Number(encNum),
     });
 
     if (user) {
-      req.user = user;
+      req.username = user.username;
+      req.channels = user.channels;
       next();
     }
   } catch (err) {
