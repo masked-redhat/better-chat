@@ -23,4 +23,6 @@ const checkPassword = async (username, password) => {
   return false;
 };
 
-export const Password = { hashPasswordAndSave, checkPassword };
+const Password = { hashAndSave: hashPasswordAndSave, check: checkPassword };
+
+export default Password;
