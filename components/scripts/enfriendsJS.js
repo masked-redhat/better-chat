@@ -1,9 +1,9 @@
-import { Cookies } from "./cookies.js";
+import Auth from "../../middlewares/auth.js";
 import { User } from "../../models/User.js";
 import { Channel } from "../../models/Channel.js";
 
 const getUserFriendsAndChannels = async (cook) => {
-    let usr = await Cookies.getUser(cook);
+    let usr = await Auth.getUser(cook);
     let channels = [];
     let frndsG = [];
     for (const channel of usr.channels) {

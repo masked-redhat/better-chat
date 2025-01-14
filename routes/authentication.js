@@ -2,7 +2,7 @@ import { Router } from "express";
 import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
 import { Password } from "../components/scripts/enpassJS.js";
-import { Cookies } from "../components/scripts/cookies.js";
+import Auth from "../middlewares/auth.js";
 import APP from "../constants/env.js";
 import { USR } from "../components/scripts/enuserJS.js";
 
@@ -43,7 +43,7 @@ router.post("/login", async (req, res) => {
   let match = await Password.checkPassword(user, pass);
 
   if (match) {
-    let cookies = await Cookies.createCookie(user);
+    let cookies = await Auth.setupAuth(user);
     res
       .status(200)
       .cookie(APP.COOKIES.USER_ID, cookies[0], APP.COOKIE_OPTIONS)
