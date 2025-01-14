@@ -44,7 +44,7 @@ router.post("/signup", async (req, res) => {
 router.post("/login", async (req, res) => {
   const { username, password } = req.body;
 
-  let match = await Password.checkPassword(username, password);
+  let match = await Password.check(username, password);
 
   if (match) {
     const cookies = await Auth.setupAuth(username);
