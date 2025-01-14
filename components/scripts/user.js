@@ -1,8 +1,8 @@
-import { User } from "../../models/User.js";
+import { User as u } from "../../models/User.js";
 
 const checkUserName = async (name) => {
   try {
-    const user = await User.findOne({ username: name });
+    const user = await u.findOne({ username: name });
     return user === null ? true : false;
   } catch {}
 
