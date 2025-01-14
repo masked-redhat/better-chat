@@ -51,9 +51,11 @@ const validate = async (req, res, next) => {
     });
 
     if (user) {
-      req.username = user.username;
-      req.channels = user.channels;
-      req.notifications = user.notifications;
+      req.user = {
+        username: user.username,
+        channels: user.channels,
+        notifications: user.notifications,
+      };
       next();
     }
   } catch (err) {
