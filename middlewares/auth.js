@@ -10,56 +10,57 @@ const getRandomEncryptedNum = () => {
 };
 
 const setupAuth = async (name) => {
+  // set the encNum to user data
   const encNum = getRandomEncryptedNum().toString();
-  const res = await User.updateOne({ username: name }, { encNumber: encNum });
   let encCookie, encryptedNum;
-  if (res.acknowledged) {
-    encryptedNum = crypto.crypt(name, encNum);
-    encCookie = crypto.crypt(
-      encryptedNum,
-      name + APP.COOKIE_OPTIONS.SEPARATOR + encNum
-    );
-  }
+  try {
+    const res = await User.updateOne({ username: name }, { encNumber: encNum });
+
+    // encrypt the cookies and get a encrypted cookie with a encrypted number
+    if (res.acknowledged) {
+      encryptedNum = crypto.crypt(name, encNum);
+
+      encCookie = crypto.crypt(
+        encryptedNum,
+        name + APP.COOKIE_OPTIONS.SEPARATOR + encNum
+      );
+    }
+  } catch {}
+
   return { encCookie, encryptedNum };
 };
 
-const validate = async (encCookie, encryptedNum) => {
+const validate = async (req, res, next) => {
+  // get the userId and encryptedNum from the cookies
+  const cookies = req.cookies;
+  const encCookie = cookies[APP.COOKIES.USER_ID],
+    encryptedNum = cookies[APP.COOKIES.ENCRYPTED_NUM];
+
   try {
+    // decrypt and get the username and encNum
     const decCookie = crypto
       .decrypt(encryptedNum, encCookie)
       .split(APP.COOKIE_OPTIONS.SEPARATOR);
 
     const [username, encNum] = decCookie;
 
-    let res = await User.findOne({
+    // find the user
+    let user = await User.findOne({
       username,
       encNumber: Number(encNum),
     });
-    if (res) {
-      return true;
+
+    if (user) {
+      req.user = user;
+      next();
     }
   } catch (err) {
     console.log(err);
   }
 
-  return false;
+  res.status(200).redirect("/#signup");
 };
 
-const getUserFromCookies = async (cookies) => {
-  const { encCookie, encryptedNum } = cookies;
-  const decCookie = crypto
-    .decrypt(encryptedNum, encCookie)
-    .split(APP.COOKIE_OPTIONS.SEPARATOR);
-
-  const [username, encNum] = decCookie;
-
-  let user = await User.findOne({
-    username,
-    encNumber: Number(encNum),
-  });
-  return user;
-};
-
-const Auth = { setupAuth, validate, getUser: getUserFromCookies };
+const Auth = { setupAuth, validate };
 
 export default Auth;
