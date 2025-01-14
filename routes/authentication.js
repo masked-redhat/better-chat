@@ -12,6 +12,11 @@ router.use(cookieParser());
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
 
+const cookieOptions = {
+  https: APP.COOKIE_OPTIONS.HTTPS,
+  maxAge: APP.COOKIE_OPTIONS.MAXAGE,
+};
+
 router.post("/signup", async (req, res) => {
   let user = req.body.username;
   let pass = req.body.password;
@@ -28,12 +33,8 @@ router.post("/signup", async (req, res) => {
   if (cookies) {
     res
       .status(200)
-      .cookie(APP.COOKIES.USER_ID, cookies.encCookie, APP.COOKIE_OPTIONS)
-      .cookie(
-        APP.COOKIES.ENCRYPTED_NUM,
-        cookies.encryptedNum,
-        APP.COOKIE_OPTIONS
-      )
+      .cookie(APP.COOKIES.USER_ID, cookies.encCookie, cookieOptions)
+      .cookie(APP.COOKIES.ENCRYPTED_NUM, cookies.encryptedNum, cookieOptions)
       .json({ status: true });
   } else {
     res.status(403).json({ status: false });
