@@ -57,12 +57,13 @@ const validate = async (req, res, next) => {
         notifications: user.notifications,
       };
       next();
+      return;
     }
   } catch (err) {
     console.log(err);
   }
 
-  res.status(200).redirect("/#signup");
+  res.render("signin");
 };
 
 const Auth = { setupAuth, validate };

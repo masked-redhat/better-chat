@@ -19,11 +19,14 @@ const COOKIES = {
   ENCRYPTED_NUM: "__enc",
 };
 
+const URL = `http://${process.env.HOST}:${process.env.PORT}`;
+
 const APP = {
   PORT,
   MONGO_URI,
   COOKIE_OPTIONS,
   COOKIES,
+  URL,
 };
 
 export default APP;

@@ -8,6 +8,7 @@ import { Channels } from "./components/scripts/enchannelJS.js";
 import APP from "./constants/env.js";
 import { connectToMongo } from "./db/db.js";
 import { Router as r } from "./routes/routes.js";
+import Auth from "./middlewares/auth.js";
 
 // application configuration
 const app = express();
@@ -26,9 +27,9 @@ app.use(express.static("public"));
 app.use(cookieParser());
 
 // application routes
-app.use("/", r.RootRouter);
+app.use("/", Auth.validate, r.RootRouter);
 app.use("/auth", r.AuthRouter);
-app.use("/home", r.HomeRouter);
+app.use("/home", Auth.validate, r.HomeRouter);
 
 io.on("connection", (socket) => {
   console.log("a user connected - ", socket.id);
@@ -127,5 +128,10 @@ io.on("connection", (socket) => {
 });
 
 server.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+  console.log(`Application started on ${APP.URL}`);
+});
+
+process.on("SIGINT", () => {
+  server.close();
+  console.log("Application closed");
 });
