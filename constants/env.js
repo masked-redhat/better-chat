@@ -7,6 +7,8 @@ const MONGO_URI = process.env.MONGO_URI;
 const COOKIE_OPTIONS = {
   HTTPS: true,
   MAXAGE: 24 * 60 * 60 * 1000,
+  SECURE: true,
+  SAMESITE: "strict",
   ENCRYPTED_NUM: {
     MIN: 1000,
     MAX: 100000,

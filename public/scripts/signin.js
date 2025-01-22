@@ -47,7 +47,6 @@ const updateFormBtn = (type, text = '', location = '') => {
 }
 
 FormBtn.onclick = async (e) => {
-    let state = e.target.dataset.type;
     let username = user.value.trim();
     let password = pass.value.trim();
 
@@ -58,15 +57,17 @@ FormBtn.onclick = async (e) => {
 
     updateFormBtn(0);
 
-    let credentials = JSON.stringify({ username: username, password: password });
+    let credentials = JSON.stringify({ username, password });
 
-    let authenticate = fetch(`/auth/${FormBtn.dataset.type}`, {
+    const authenticate = fetch(`/auth/${FormBtn.dataset.type}`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
         body: credentials,
     });
+
+    console.log(credentials)
 
     authenticate.then(res => res.json()).then(res => {
         console.log(res);

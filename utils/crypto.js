@@ -3,7 +3,7 @@
 
 const crypt = (salt, text) => {
   const textToChars = (text) => text.split("").map((c) => c.charCodeAt(0));
-  const byteHex = (n) => ("0" + Number(n).toString(16)).substring(-2);
+  const byteHex = (n) => ("0" + Number(n).toString(16)).slice(-2);
   const applySaltToChar = (code) =>
     textToChars(salt).reduce((a, b) => a ^ b, code);
 
@@ -29,4 +29,4 @@ const decrypt = (salt, encoded) => {
 
 const crypto = { crypt, decrypt };
 
-export default crypto
+export default crypto;

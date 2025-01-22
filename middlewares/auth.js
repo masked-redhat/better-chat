@@ -36,6 +36,12 @@ const validate = async (req, res, next) => {
   const encCookie = cookies[APP.COOKIES.USER_ID],
     encryptedNum = cookies[APP.COOKIES.ENCRYPTED_NUM];
 
+  if (encCookie == undefined || encryptedNum == undefined) {
+    console.log("Required cookies are missing");
+    res.render("signin");
+    return;
+  }
+
   try {
     // decrypt and get the username and encNum
     const decCookie = crypto
@@ -47,7 +53,7 @@ const validate = async (req, res, next) => {
     // find the user
     let user = await User.findOne({
       username,
-      randomNumber: Number(encNum),
+      randomNumber: encNum,
     });
 
     if (user) {
@@ -55,6 +61,7 @@ const validate = async (req, res, next) => {
         username: user.username,
         channels: user.channels,
         notifications: user.notifications,
+        model: user,
       };
       next();
       return;

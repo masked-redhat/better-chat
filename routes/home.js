@@ -1,10 +1,9 @@
 import { Router } from "express";
-import Auth from "../middlewares/auth.js";
 import bodyParser from "body-parser";
 import { User } from "../models/User.js";
 import { Channel } from "../models/Channel.js";
 import { Chats } from "../models/Chats.js";
-import { FFrends } from "../components/scripts/enfriendsJS.js";
+import { FriendsAndChannels as fc } from "../components/scripts/friends.js";
 import { Channels } from "../components/scripts/enchannelJS.js";
 
 const router = Router();
@@ -12,40 +11,27 @@ const router = Router();
 router.use(bodyParser.json());
 
 router.get("/", async (req, res) => {
-  console.log("Working");
-  try {
-    let cookies = req.cookies;
-    let match = await Auth.validate(cookies.usrID, cookies.__enc);
-    if (match) {
-      res.render("home");
-    } else {
-      res.status(200).redirect("/#signup");
-    }
-  } catch (e) {
-    console.log(e);
-    res.status(200).redirect("/#signup");
-  }
+  res.render("home");
 });
 
 router.get("/name", async (req, res) => {
-  let name = await Auth.getUser(req.cookies);
-  res.send(name.username);
+  res.send(req.user.username);
 });
 
 router.get("/connections", async (req, res) => {
-  let data = await FFrends.getUserFriendsAndChannels(req.cookies);
+  let data = await fc.getUserFriendsAndChannels(req.user.channels);
   res.send(JSON.stringify(data));
 });
 
-router.get("/notifications", async (req, res) => {
-  let usr = await Auth.getUser(req.cookies);
-  res.send(JSON.stringify(usr.notifications));
-});
+// On Hold: still not decided
+// router.get("/notifications", async (req, res) => {
+//   let usr = await Auth.getUser(req.cookies);
+//   res.send(JSON.stringify(usr.notifications));
+// });
 
 router.post("/search", async (req, res) => {
-  let cUser = await Auth.getUser(req.cookies);
-  let fdata = await FFrends.getFriendsSearch(cUser, req.body.text);
-  let cdata = await FFrends.getChannelsSearch(req.body.text);
+  let fdata = await fc.getFriendsSearch(req.user, req.body.text);
+  let cdata = await fc.getChannelsSearch(req.body.text);
 
   let data = [...fdata, ...cdata];
 
@@ -55,8 +41,8 @@ router.post("/search", async (req, res) => {
 router.put("/join", async (req, res) => {
   let body = req.body.user,
     type = req.body.type;
-  console.log(body);
-  let cUser = await Auth.getUser(req.cookies);
+
+  let cUser = req.user.model;
   if (type == "f") {
     let user = await User.findOne({ username: body });
 
@@ -84,7 +70,7 @@ router.put("/join", async (req, res) => {
 });
 
 router.post("/getchat", async (req, res) => {
-  let user = await Auth.getUser(req.cookies);
+  let user = req.user;
   let toConnect = req.body.name;
   let typeConnection = req.body.type;
   let chatName;
@@ -103,7 +89,7 @@ router.post("/getchat", async (req, res) => {
 router.get("/create", async (req, res) => {
   let channel = await Channels.isChannel(req.query.channelName);
   if (!channel) {
-    let user = await Auth.getUser(req.cookies);
+    let user = req.user.model;
     channel = await Channels.createChannel(req.query.channelName, [user]);
     channel["status"] = "OK";
     res.send(JSON.stringify(channel));

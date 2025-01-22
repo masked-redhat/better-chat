@@ -9,6 +9,7 @@ import APP from "./constants/env.js";
 import mongo from "./db/db.js";
 import { Router as r } from "./routes/routes.js";
 import Auth from "./middlewares/auth.js";
+import bodyParser from "body-parser";
 
 // application configuration
 const app = express();
@@ -25,10 +26,11 @@ app.set("view engine", "ejs");
 // middlewares and static files
 app.use(express.static("public"));
 app.use(cookieParser());
+app.use(bodyParser.json());
 
 // application routes
-app.use("/", Auth.validate, r.RootRouter);
 app.use("/auth", r.AuthRouter);
+app.use("/", Auth.validate, r.RootRouter);
 app.use("/home", Auth.validate, r.HomeRouter);
 
 io.on("connection", (socket) => {
@@ -133,12 +135,6 @@ server.listen(port, () => {
 
 //gracefully handle exit
 process.on("SIGINT", async () => {
-  await mongo.close();
-  server.close();
-  console.log("Application closed");
-});
-
-process.on("exit", async () => {
   await mongo.close();
   server.close();
   console.log("Application closed");
