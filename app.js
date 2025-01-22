@@ -6,7 +6,7 @@ import { Chats } from "./models/Chats.js";
 import { User } from "./models/User.js";
 import { Channels } from "./components/scripts/enchannelJS.js";
 import APP from "./constants/env.js";
-import { connectToMongo } from "./db/db.js";
+import mongo from "./db/db.js";
 import { Router as r } from "./routes/routes.js";
 import Auth from "./middlewares/auth.js";
 
@@ -17,7 +17,7 @@ const io = new Server(server); // create a new io server from the http server
 const port = APP.PORT;
 
 // connect to database
-await connectToMongo();
+await mongo.connect();
 
 // set viewing engine to be 'ejs'
 app.set("view engine", "ejs");
@@ -132,12 +132,14 @@ server.listen(port, () => {
 });
 
 //gracefully handle exit
-process.on("SIGINT", () => {
+process.on("SIGINT", async () => {
+  await mongo.close();
   server.close();
   console.log("Application closed");
 });
 
-process.on("exit", () => {
+process.on("exit", async () => {
+  await mongo.close();
   server.close();
   console.log("Application closed");
 });

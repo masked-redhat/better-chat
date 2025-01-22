@@ -15,3 +15,25 @@ export const connectToMongo = async () => {
     }, 4000);
   }
 };
+
+export const closeMongoConnection = async () => {
+  try {
+    await mongoose.connection.close();
+
+    console.log("Closed connection to Mongo DB");
+  } catch (err) {
+    console.log(err);
+
+    setTimeout(async () => {
+      console.log("Retrying connection...");
+      await closeMongoConnection();
+    }, 4000);
+  }
+};
+
+const mongo = {
+  connect: connectToMongo,
+  close: closeMongoConnection,
+};
+
+export default mongo;
