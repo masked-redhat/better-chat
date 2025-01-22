@@ -131,7 +131,13 @@ server.listen(port, () => {
   console.log(`Application started on ${APP.URL}`);
 });
 
+//gracefully handle exit
 process.on("SIGINT", () => {
+  server.close();
+  console.log("Application closed");
+});
+
+process.on("exit", () => {
   server.close();
   console.log("Application closed");
 });
